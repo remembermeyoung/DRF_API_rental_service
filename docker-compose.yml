@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  app:
+    build: ./
+    container_name: rental_API
+    command: bash entrypoint.sh
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+
+  redis:
+    restart: on-failure
+    image: redis
+    ports:
+      - 6379:6379
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: on-failure
+    environment:
+      POSTGRES_DB: rental
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  celery:
+    build: ./
+    command: celery -A celery_app.celery worker -l info
+    depends_on:
+      - redis
+      - app
+
+  celery-beat:
+    build: ./
+    command: celery -A celery_app.celery beat -l info
+    depends_on:
+      - redis
+      - app
