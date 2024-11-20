@@ -11,10 +11,16 @@ class Command(BaseCommand):
 
         try:
             Bicycle.objects.get(id=1)
-        except Exception:
-            for i in range(len(models)):
-                Bicycle.objects.create(model=models[i], price=prices[i])
+        except Bicycle.DoesNotExist:
+            bicycles = [Bicycle(model=models[i], price=prices[i]) for i in range(0,5)]
+            Bicycle.objects.bulk_create(bicycles)
 
             get_user_model().objects.create_user(username='test_user', password='test_password', email='test@test.com')
             get_user_model().objects.create_user(username='test_user2', password='test_password2', email='test2@test.com')
-            print('Скрипт был запущен')
+            print('Стартовый скрипт запущен\n'
+                  'Создано 5 моделей велосипедов и 2 тестовых пользователя:\n'
+                  '1. username=test_user, password=test_password, email=test@test.com\n'
+                  '2. username=test_user2, password=test_password2, email=test2@test.com\n')
+        else:
+            print('Стартовый скрипт запущен\n'
+                  'Тестовые данные уже в БД')

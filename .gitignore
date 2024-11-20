@@ -1,6 +1,7 @@
 .venv
-.env
+venv
 db.sqlite3
 dump.rdb
+.env
 
 
